@@ -1,0 +1,31 @@
+#!/bin/sh
+
+check_domain() {
+  RES=`whois $DOMAIN`
+
+  case "$RES" in
+    *"NOT FOUND"*|*"Not found"*|*"No match"*|*"No entries found"*)
+      echo "$DOMAIN - free"
+      ;;
+    *)
+      echo "$DOMAIN - busy"
+      ;;
+  esac
+}
+
+BASE=$1
+shift
+
+if [ "$TLDS" = "" ]; then
+  TLDS="$@"
+fi
+
+if [ "$TLDS" = "" ]; then
+  TLDS="ru com org net info name"
+fi
+
+for TLD in $TLDS; do
+  DOMAIN="$BASE.$TLD"
+  
+  check_domain
+done
