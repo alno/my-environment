@@ -1,0 +1,22 @@
+[user]
+	name = Alexey Noskov
+	email = alexey.noskov@gmail.com
+[apply]
+	whitespace = strip
+
+[diff]
+	color = auto
+	rename = copy
+
+[pager]
+	color = true
+
+[status]
+	color = auto
+
+[url "git://git.kde.org/"]
+    insteadOf = kde://
+
+[url "ssh://git@git.kde.org/"]
+    pushInsteadOf = kde://
+

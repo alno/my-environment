@@ -1,0 +1,31 @@
+# enable color support of ls and also add handy aliases
+if [ "$TERM" != "dumb" ]; then
+  eval "`dircolors -b`"
+  alias ls='ls --color=auto'
+  #alias dir='ls --color=auto --format=vertical'
+  #alias vdir='ls --color=auto --format=long'
+fi 
+
+complete -C $rvm_scripts_path/rvm-completion.rb -o default rvm
+
+alias rake='~/Bin/rake-notify'
+alias mvn3='/opt/maven3/bin/mvn 2>&1 clean install | tee buildlog.latest.txt'
+alias sp='rspec spec/**_spec.rb'
+
+gp() {
+  git push --all origin
+}
+
+ga() {
+  git add $@
+}
+
+sp2() {
+  IN_MEMORY_DB=2 spec spec/suite.rb 
+}
+
+sp3() {
+  IN_MEMORY_DB=2 bundle exec rspec spec/suite.rb 
+}
+
+[[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm"

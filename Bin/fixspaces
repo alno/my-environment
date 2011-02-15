@@ -1,0 +1,24 @@
+#!/usr/bin/env ruby
+
+if ARGV[0].nil?
+  puts "Usage: fixspaces <file-or-directory>"
+  exit 1
+elsif File.file? ARGV[0]
+  mask = ARGV[0]
+elsif File.directory? ARGV[0]
+  mask = "#{ARGV[0]}/**/*.{txt,rb,gemspec,rdoc,textile,markdown,tex,hs}"
+else
+  puts "Error: '#{ARGV[0]}' not a file or directory"
+  puts "Usage: fixspaces <file-or-directory>"
+  exit 1
+end
+
+Dir.glob(mask).each do |p|
+  lines = File.readlines(p)
+  if lines.inject(false) { |memo, line| line.gsub!(/\s+$/, "") || memo }
+    File.open(p, "w") do |f|
+      f.puts lines.join("\n")
+    end
+  end
+end
+
