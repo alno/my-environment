@@ -1,0 +1,37 @@
+#!/usr/bin/env ruby
+
+require 'rubygems'
+require 'clamp'
+
+LH_DIR = '/home/alno/Projects/LakeHouse'
+
+class LakehouseCommand < Clamp::Command
+
+  subcommand "up", "Update project(s)" do
+
+    parameter "[PROJECT]", "project name"
+
+    def update(dir)
+      puts "Updating #{File.basename dir}"
+
+      `cd #{dir} && svn up`
+    end
+
+    def execute
+      if project
+        update "#{LH_DIR}/#{project}"
+      else
+        Dir[LH_DIR + '/*'].each do |dir|
+          next unless File.directory? dir
+          next unless File.exists? "#{dir}/.svn"
+
+          update dir
+        end
+      end
+    end
+
+  end
+
+end
+
+LakehouseCommand.run

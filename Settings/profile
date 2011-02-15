@@ -1,1 +1,1 @@
-PATH=$USER/Enviroment/Bin:$PATH
+PATH=$HOME/Environment/Bin:$PATH
