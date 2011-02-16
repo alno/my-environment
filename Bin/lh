@@ -14,7 +14,7 @@ class LakehouseCommand < Clamp::Command
     def update(dir)
       puts "Updating #{File.basename dir}"
 
-      `cd #{dir} && svn up`
+      systen "cd #{dir} && svn up"
     end
 
     def execute
@@ -28,6 +28,28 @@ class LakehouseCommand < Clamp::Command
           update dir
         end
       end
+    end
+
+  end
+
+  subcommand "restart", "Restart server" do
+
+    parameter "USER", "user name"
+    parameter "DOMAIN", "domain name"
+
+    def execute
+      system "ssh #{user}@ontheline.ru \"cd www/#{domain} && svn up && touch tmp/restart.txt\""
+    end
+
+  end
+
+  subcommand "deploy", "Deploy project to server" do
+
+    parameter "USER", "user name"
+    parameter "DOMAIN", "domain name"
+
+    def execute
+      puts `ssh #{user}@ontheline.ru "cd www/#{domain} && svn up && rake db:migrate RAILS_ENV=production && touch tmp/restart.txt"`
     end
 
   end
