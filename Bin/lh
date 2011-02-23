@@ -2,8 +2,57 @@
 
 require 'rubygems'
 require 'clamp'
+require 'net/ssh'
 
-LH_DIR = '/home/alno/Projects/LakeHouse'
+class Project
+
+  def self.dir( project )
+    "/home/alno/Projects/LakeHouse/#{project}"
+  end
+
+  def self.find( project )
+    if project
+      Project.new( project )
+    elsif File.exists? 'config/deploy.rb'
+      Project.new( File.basename `readlink -f .`[0..-2] )
+    else
+      puts "No project found here"
+      exit
+    end
+  end
+
+  def initialize(name)
+    @name = name
+    @path = Project.dir name
+
+    reload!
+  end
+
+  def user(val = nil)
+    if val then @user = val else @user end
+  end
+
+  def server(val = nil)
+    if val then @server = val else @server end
+  end
+
+  def domains(val = nil)
+    if val then @domains = val else @domains end
+  end
+
+  def reload!
+    eval File.read( "#{@path}/config/deploy.rb" )
+  end
+
+  def ssh(&block)
+    Net::SSH.start @server, @user, &block
+  end
+
+  def exec_ssh
+    exec "ssh #{user}@#{server}"
+  end
+
+end
 
 class LakehouseCommand < Clamp::Command
 
@@ -19,9 +68,11 @@ class LakehouseCommand < Clamp::Command
 
     def execute
       if project
-        update "#{LH_DIR}/#{project}"
+        update Project.dir project
+      elsif File.exists? 'config/deploy.rb'
+        update `readlink -f .`
       else
-        Dir[LH_DIR + '/*'].each do |dir|
+        Dir[Project.dir '*'].each do |dir|
           next unless File.directory? dir
           next unless File.exists? "#{dir}/.svn"
 
@@ -34,22 +85,56 @@ class LakehouseCommand < Clamp::Command
 
   subcommand "restart", "Restart server" do
 
-    parameter "USER", "user name"
-    parameter "DOMAIN", "domain name"
+    parameter "[PROJECT]", "project name"
+    parameter "[DOMAIN]", "domain alias"
 
     def execute
-      system "ssh #{user}@ontheline.ru \"cd www/#{domain} && svn up && touch tmp/restart.txt\""
+      proj = Project.find( project )
+      proj.ssh do |ssh|
+        domains = if domain
+          proj.domains[domain.to_sym]
+        else
+          proj.domains.values
+        end
+        domains.each do |domain|
+          puts "Restarting #{domain}..."
+
+          ssh.exec! "cd www/#{domain} && touch tmp/restart.txt"
+        end
+      end
     end
 
   end
 
   subcommand "deploy", "Deploy project to server" do
 
-    parameter "USER", "user name"
-    parameter "DOMAIN", "domain name"
+    parameter "[PROJECT]", "project name"
+    parameter "[DOMAIN]", "domain alias"
 
     def execute
-      puts `ssh #{user}@ontheline.ru "cd www/#{domain} && svn up && rake db:migrate RAILS_ENV=production && touch tmp/restart.txt"`
+      proj = Project.find( project )
+      proj.ssh do |ssh|
+        domains = if domain
+          proj.domains[domain.to_sym]
+        else
+          proj.domains.values
+        end
+        domains.each do |domain|
+          puts "Updating #{domain}..."
+
+          ssh.exec! "cd www/#{domain} && svn up && rake db:migrate RAILS_ENV=production && touch tmp/restart.txt"
+        end
+      end
+    end
+
+  end
+
+  subcommand "sh", "Open shell in remote server" do
+
+    parameter "PROJECT", "project name"
+
+    def execute
+      Project.new( project ).exec_ssh
     end
 
   end
