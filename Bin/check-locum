@@ -1,0 +1,19 @@
+#!/usr/bin/env ruby
+
+require 'rubygems'
+require 'mechanize'
+
+if ARGV[0] && ARGV[1]
+  agent = Mechanize.new
+  agent.user_agent = 'Mozilla/5.0 (Linux; U; Android 2.2; en-us; Desire_A8181 Build/FRF91) AppleWebKit/533.1 (KHTML, like Gecko) Version/4.0 Mobile Safari/533.1'
+  agent.get 'http://locum.ru/'
+  
+  login_page = agent.get 'http://locum.ru/'
+  login_form = login_page.forms.first
+  login_form.field(:name => 'login_data[login]').value = ARGV[0]
+  login_form.field(:name => 'login_data[password]').value = ARGV[1]
+
+  puts login_form.submit.parser.css('#cpl-data .section .value .number').first.text
+else
+  puts 'Usage: check-locum [LOGIN] [PASSWORD]'
+end
