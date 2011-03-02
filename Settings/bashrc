@@ -11,6 +11,7 @@ complete -C $rvm_scripts_path/rvm-completion.rb -o default rvm
 alias rake='~/Environment/Bin/rake-notify'
 alias mvn3='/opt/maven3/bin/mvn 2>&1 clean install | tee buildlog.latest.txt'
 alias sp='rspec spec/**_spec.rb'
+alias cmake='cmake -DCMAKE_PREFIX=/usr -DCMAKE_INSTALL_PREFIX=/usr'
 
 gp() {
   git push --all origin
