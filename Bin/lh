@@ -52,6 +52,10 @@ class Project
     exec "ssh #{user}@#{server}"
   end
 
+  def exec_cd
+    exec "cd #{@path} && bash"
+  end
+
 end
 
 class LakehouseCommand < Clamp::Command
@@ -122,19 +126,29 @@ class LakehouseCommand < Clamp::Command
         domains.each do |domain|
           puts "Updating #{domain}..."
 
-          ssh.exec! "cd www/#{domain} && svn up && rake db:migrate RAILS_ENV=production && touch tmp/restart.txt"
+          ssh.exec! "cd www/#{domain} ; svn up ; rake db:migrate RAILS_ENV=production ; touch tmp/restart.txt"
         end
       end
     end
 
   end
 
-  subcommand "sh", "Open shell in remote server" do
+  subcommand "ssh", "Open shell in remote server" do
+
+    parameter "[PROJECT]", "project name"
+
+    def execute
+      Project.find( project ).exec_ssh
+    end
+
+  end
+
+  subcommand "cd", "Change directory" do
 
     parameter "PROJECT", "project name"
 
     def execute
-      Project.new( project ).exec_ssh
+      Project.new( project ).exec_cd
     end
 
   end
