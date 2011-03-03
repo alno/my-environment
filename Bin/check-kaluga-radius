@@ -1,0 +1,26 @@
+#!/usr/bin/env ruby
+
+require 'rubygems'
+require 'mechanize'
+
+unless ARGV[0] && ARGV[1]
+  puts 'Usage: check-kaluga-radius [LOGIN] [PASSWORD]'
+  exit
+end
+
+begin
+  agent = Mechanize.new
+  agent.user_agent = 'Mozilla/5.0 (Linux; U; Android 2.2; en-us; Desire_A8181 Build/FRF91) AppleWebKit/533.1 (KHTML, like Gecko) Version/4.0 Mobile Safari/533.1'
+
+  login_page = agent.get 'http://cabinet.kaluga.ru/klg/www.PageViewer?page_name=S*START_PAGE'
+  login_form = login_page.forms.first
+  login_form.field(:name => 'p_logname').value = ARGV[0].upcase
+  login_form.field(:name => 'p_pwd').value = ARGV[1]
+
+  result_page = agent.get login_form.submit.meta.first.href
+
+  puts result_page.parser.css('.dat').text.match(/\d+\.\d+/)[0]
+rescue
+  puts 'N/A'
+  raise $!
+end
