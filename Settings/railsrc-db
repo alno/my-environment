@@ -1,0 +1,56 @@
+module DatabaseHelpers
+  extend self
+
+  def tables
+    render_output ActiveRecord::Base.connection.tables.map{|e|[e]},{
+      :class   => auto_table,
+      :headers => %w<tables>,
+    }
+    true
+  end
+
+  def table(which)
+    render_output ActiveRecord::Base.connection.columns(which).map{ |e|
+      [e.name, e.type, e.sql_type, e.limit, e.default, e.scale, e.precision, e.primary, e.null]
+    },{
+      :class   => auto_table,
+      :headers => %w<name type sql_type limit default scale precision primary null>,
+    }
+    true
+  end
+
+  def counts
+    render_output ActiveRecord::Base.connection.tables.map{|e|
+      [e, ActiveRecord::Base.connection.select_value("SELECT COUNT(*) FROM #{e}")]
+    },{
+      :class   => auto_table,
+      :headers => %w<table count>,
+    }
+    true
+  end
+
+  private
+  
+  def render_output( data, options )
+    if defined? Hirb
+      Hirb::Console.render_output data, options
+    else
+      puts data.inspect
+    end
+  end
+  
+  def auto_table
+    Hirb::Helpers::AutoTable if defined? Hirb
+  end
+
+end
+
+def db; DatabaseHelpers; end
+
+begin
+  require 'hirb'
+  
+  Hirb
+rescue LoadError => err
+  puts "Error loading hirb, no tables in db output"
+end

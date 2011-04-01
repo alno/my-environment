@@ -4,10 +4,13 @@ SCRIPT=$(readlink -f $0)
 SCRIPTPATH=`dirname $SCRIPT`
 
 link_to_home() {
-    rm -f $HOME/.$1; ln -s $SCRIPTPATH/Settings/$1 $HOME/.$1
+  echo "Linking $1..."
+  rm -f $HOME/.$1; ln -s $SCRIPTPATH/Settings/$1 $HOME/.$1
 }
 
 link_to_home profile
 link_to_home bashrc
 
 link_to_home gitconfig
+
+link_to_home irbrc

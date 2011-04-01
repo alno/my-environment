@@ -1,0 +1,27 @@
+require 'rubygems'
+
+begin
+  require "wirble"
+
+  Wirble::Colorize.colors.merge!(
+    :object_class => :black,
+    :class        => :dark_gray,
+    :symbol       => :red,
+    :symbol_prefix=> :blue
+  )
+
+  Wirble.init
+  Wirble.colorize
+rescue LoadError => err
+  puts "Error loading wirble"
+end
+
+railsrc = File.join( File.dirname( File.readlink __FILE__), 'railsrc' )
+
+if ( ENV['RAILS_ENV'] || defined? Rails ) && File.exist?( railsrc )
+  begin
+    load railsrc
+  rescue Exception
+    warn "Could not load: #{ railsrc } because of #{ $!.message }"
+  end
+end

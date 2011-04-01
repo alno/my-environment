@@ -4,7 +4,7 @@ if [ "$TERM" != "dumb" ]; then
   alias ls='ls --color=auto'
   #alias dir='ls --color=auto --format=vertical'
   #alias vdir='ls --color=auto --format=long'
-fi 
+fi
 
 complete -C $rvm_scripts_path/rvm-completion.rb -o default rvm
 
@@ -22,11 +22,11 @@ ga() {
 }
 
 sp2() {
-  IN_MEMORY_DB=2 spec spec/suite.rb 
+  IN_MEMORY_DB=2 spec spec/suite.rb
 }
 
 sp3() {
-  IN_MEMORY_DB=2 bundle exec rspec spec/suite.rb 
+  IN_MEMORY_DB=2 bundle exec rspec spec/suite.rb
 }
 
 [[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm"
