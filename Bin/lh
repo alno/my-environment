@@ -56,6 +56,10 @@ class Project
     exec "cd #{@path} && bash"
   end
 
+  def exec_console
+    exec "ssh #{user}@#{server} \"cd www/#{@domains[:main]} && script/console production\""
+  end
+
 end
 
 class LakehouseCommand < Clamp::Command
@@ -139,6 +143,16 @@ class LakehouseCommand < Clamp::Command
 
     def execute
       Project.find( project ).exec_ssh
+    end
+
+  end
+
+  subcommand "console", "Open rails console in remote server" do
+
+    parameter "[PROJECT]", "project name"
+
+    def execute
+      Project.find( project ).exec_console
     end
 
   end
