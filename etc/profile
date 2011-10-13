@@ -1,0 +1,2 @@
+export PATH=$HOME/Environment/bin:$HOME/.cabal/bin:/opt/android-sdk/tools:/opt/android-sdk/platform-tools:/opt/node/bin:$PATH
+export NODE_PATH=/opt/node:/opt/node/lib/node_modules

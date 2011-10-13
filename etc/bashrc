@@ -4,7 +4,7 @@ if [ "$TERM" != "dumb" ]; then
   alias ls='ls --color=auto'
 fi
 
-alias rake='~/Environment/Bin/rake-notify'
+alias rake='~/Environment/bin/rake-notify'
 alias mvn3='/opt/maven3/bin/mvn 2>&1 clean install | tee buildlog.latest.txt'
 alias cmake='cmake -DCMAKE_PREFIX=/usr -DCMAKE_INSTALL_PREFIX=/usr'
 
@@ -16,7 +16,7 @@ alias gs='git status'
 
 alias sp='bundle exec rspec spec/**_spec.rb'
 
-export PATH="$HOME/Environment/Modules/rbenv/bin:$PATH"
+export PATH="$HOME/Environment/local/rbenv/bin:$PATH"
 
 eval "$(rbenv init -)"
 

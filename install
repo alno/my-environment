@@ -5,7 +5,7 @@ SCRIPTPATH=`dirname $SCRIPT`
 
 link_to_home() {
   echo "Linking $1..."
-  rm -f $HOME/.$1; ln -s $SCRIPTPATH/Settings/$1 $HOME/.$1
+  rm -f $HOME/.$1; ln -s $SCRIPTPATH/etc/$1 $HOME/.$1
 }
 
 link_to_home profile
