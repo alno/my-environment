@@ -2,11 +2,7 @@
 if [ "$TERM" != "dumb" ]; then
   eval "`dircolors -b`"
   alias ls='ls --color=auto'
-  #alias dir='ls --color=auto --format=vertical'
-  #alias vdir='ls --color=auto --format=long'
 fi
-
-complete -C $rvm_scripts_path/rvm-completion.rb -o default rvm
 
 alias rake='~/Environment/Bin/rake-notify'
 alias mvn3='/opt/maven3/bin/mvn 2>&1 clean install | tee buildlog.latest.txt'
@@ -18,14 +14,9 @@ alias ga='git add'
 alias gc='git commit'
 alias gs='git status'
 
-alias sp='rspec spec/**_spec.rb'
+alias sp='bundle exec rspec spec/**_spec.rb'
 
-sp2() {
-  IN_MEMORY_DB=2 spec spec/suite.rb
-}
+export PATH="$HOME/Environment/Modules/rbenv/bin:$PATH"
 
-sp3() {
-  IN_MEMORY_DB=2 bundle exec rspec spec/suite.rb
-}
+eval "$(rbenv init -)"
 
-[[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm"
