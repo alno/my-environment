@@ -1,0 +1,12 @@
+#!/bin/sh
+
+if [ "$1" = "noxinit" ]
+then
+  export LANG=ru_RU.UTF-8
+  export WINEPREFIX=/home/alno/.winegames
+
+  ck-launch-session &
+  cd "$HOME/Games/SimCity4/Apps" && wine SimCity\ 4.exe -d:software -intro:off -CPUCount:1 -customresolution:enabled -r1680x1050x32
+else
+  xinit $0 noxinit -- :1
+fi
