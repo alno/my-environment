@@ -1,0 +1,3 @@
+#!/bin/sh
+
+cd "$HOME/Games/Supaplex" && dosbox spfix63.exe
