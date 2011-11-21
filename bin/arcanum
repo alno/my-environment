@@ -1,0 +1,9 @@
+#!/bin/sh
+
+if [ "$1" = "noxinit" ]
+then
+  ck-launch-session &
+  cd "$HOME/Games/Arcanum" && wine Arcanum.exe -no3d -opengl
+else
+  xinit $0 noxinit -- :1
+fi
