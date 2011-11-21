@@ -1,0 +1,266 @@
+#!/usr/bin/env ruby
+
+class String
+
+  def sel?
+    not (empty? || self =~ /^[-._\w\d]+[:=]/)
+  end
+
+end
+
+class Reader
+
+  def initialize(name)
+    f = File.open(name)
+    @lines = f.lines.to_a
+    f.close
+  end
+
+  def gets
+    @lines.shift
+  end
+
+  def peeks
+    @lines.first
+  end
+
+end
+
+class Node
+
+  def split(line)
+    res = line.gsub /^(\s\s)+/, ''
+    off = (line.length - res.length) / 2
+
+    [off, res.gsub("\n",'')]
+  end
+
+  def transform(parent)
+  end
+
+end
+
+class Empty < Node
+
+  def parse(r)
+    off, exp = split r.gets
+
+    raise StandardError.new("Parsing error: #{line}") unless exp.empty?
+
+    self
+  end
+
+  def write(f, o)
+    f.puts ""
+  end
+
+end
+
+class Single < Node
+
+  def parse(r)
+    off, exp = split r.gets
+
+    @body = exp
+
+    self
+  end
+
+  def write(f, o)
+    f.puts "#{"  " * o}#{@body}"
+  end
+
+end
+
+class Multi < Node
+
+  def initialize
+    @children = []
+  end
+
+  def parse(r, o)
+    off, exp = split r.gets
+    @name = exp
+
+    raise StandardError.new("Parsing error: #{line}") if off != o-1
+
+    while line = r.peeks
+      off, exp = split line
+
+      if exp.empty?
+        @children << Empty.new.parse(r)
+      else
+        return self if off < o
+
+        raise StandardError.new("Parsing error: #{line}") if off > o
+
+        if exp.end_with? ':'
+          @children << Multi.new.parse(r, o+1)
+        else
+          @children << Single.new.parse(r)
+        end
+      end
+    end
+
+    self
+  end
+
+  def write(f, o)
+    f.puts "#{"  " * o}#{@name}"
+    @children.each{|c| c.write(f, o+1)}
+  end
+
+end
+
+class Sequence < Node
+
+  attr_accessor :children
+
+  def initialize
+    @children = []
+  end
+
+  def empty?
+    @children.empty?
+  end
+
+  def parse_children(r, o)
+    while line = r.peeks
+      off, exp = split line
+
+      if exp.empty?
+        @children << Empty.new.parse(r)
+      else
+        return if off < o
+
+        raise StandardError.new("Parsing error: #{line}") if off > o
+
+        if exp.sel?
+          @children << Rule.new.parse(r, o+1)
+        elsif exp.end_with? ':'
+          @children << Multi.new.parse(r, o+1)
+        else
+          @children << Single.new.parse(r)
+        end
+      end
+    end
+  end
+
+  def transform(parent)
+    @children.each{|c| c.transform self}
+  end
+
+end
+
+class Rule < Sequence
+
+  attr_accessor :sel
+
+  def parse(r, o)
+    parse_selector(r, o-1)
+    parse_children(r, o)
+
+    self
+  end
+
+  def parse_selector(r, o)
+    @sel = []
+    while true
+      off, exp = split r.peeks
+
+      raise StandardError.new("Parsing error: #{line}") if off < o
+
+      if off == o && exp.sel?
+        r.gets
+        @sel << exp.gsub(/,$/,'')
+
+        return if !exp.end_with?(',')
+      else
+        return
+      end
+    end
+  end
+
+  def write(f, o)
+    @sel.each{|s| f.puts "#{"  " * o}#{s}#{s == @sel.last ? '' : ',' }"}
+    @children.each{|c| c.write(f, o+1)}
+  end
+
+  def combine_sel(ps, s)
+    ps.gsub(/(,\s|$)/, "#{s[1..-1]}\\1")
+  end
+
+  def transform_sel(psel)
+    newsel = []
+    oldsel = []
+
+    @sel.each do |sel|
+      h = sel.split(', ').group_by{|s| s.start_with?('&-') || s.start_with?('&_')}
+
+      newsel.push *h[true] if h[true] && !h[true].empty?
+      oldsel.push  h[false].join(', ') if h[false] && !h[false].empty?
+    end
+
+    newsel = psel.map do |ps|
+      newsel.map do |s|
+        combine_sel ps, s
+      end
+    end.flatten unless newsel.empty?
+
+    [ newsel, oldsel ]
+  end
+
+  def transform(parent)
+    todel = []
+
+    @children.each do |child|
+      next unless child.is_a? Rule
+
+      newsel, oldsel = child.transform_sel(sel)
+
+      if !newsel.empty?
+        newchild = child.dup
+        newchild.sel = newsel
+
+        parent.children << newchild
+
+        todel << child if oldsel.empty?
+      end
+    end
+
+    todel.each{|c| @children.delete c}
+
+    super
+  end
+
+end
+
+
+class Root < Sequence
+
+  def parse(r)
+    parse_children(r, 0)
+    self
+  end
+
+  def write(f, o)
+    @children.each{|c| c.write(f, o)}
+  end
+
+end
+
+def process(file)
+  puts file
+
+  root = Root.new.parse(Reader.new(file))
+  root.transform(nil)
+  root.write(File.open(file, 'w'), 0)
+end
+
+if File.directory? ARGV[0]
+  Dir["#{ARGV[0]}/**/*.sass"].each do |f|
+    process f
+  end
+else
+  process ARGV[0]
+end
