@@ -6,7 +6,7 @@ if ARGV[0].nil?
 elsif File.file? ARGV[0]
   mask = ARGV[0]
 elsif File.directory? ARGV[0]
-  mask = "#{ARGV[0]}/**/*.{txt,rb,gemspec,rdoc,textile,markdown,tex,hs,erl,erb,haml,sass,yml,rake,java}"
+  mask = "#{ARGV[0]}/**/*.{txt,rb,gemspec,rdoc,textile,markdown,tex,hs,erl,erb,haml,sass,yml,rake,java,scala,py,html}"
 else
   puts "Error: '#{ARGV[0]}' not a file or directory"
   puts "Usage: fixspaces <file-or-directory>"
