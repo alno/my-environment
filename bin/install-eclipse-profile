@@ -1,0 +1,89 @@
+#!/bin/sh
+
+ECLIPSE_DIRECTOR_ROOT=/opt/eclipse-director
+ECLIPSE_BUNDLE_POOL=/opt/eclipse-bundle-pool
+ECLIPSE_RELEASE=indigo
+
+# Install eclipse director
+if [ -x "$ECLIPSE_DIRECTOR_ROOT/director" ]; then
+	echo "Eclipse director already installed, skipping."
+else
+	echo "Installing eclipse director."
+	rm -rf /tmp/director_latest.zip "$ECLIPSE_DIRECTOR_ROOT"
+	cd /tmp && wget http://download.eclipse.org/tools/buckminster/products/director_latest.zip && unzip director_latest.zip && mv director "$ECLIPSE_DIRECTOR_ROOT"
+	rm -f /tmp/director_latest.zip
+fi
+
+# Check if profile installation required
+if [ -z "$1" ]; then
+	echo "No profile name specified, exiting."
+	exit 0
+fi
+
+ECLIPSE_ROOT="/opt/eclipse-$1"
+ECLIPSE_NAME="eclipse-$1"
+ECLIPSE_REPOSITORIES="http://download.eclipse.org/releases/$ECLIPSE_RELEASE/"
+
+# Install platform base
+if [ -x "$ECLIPSE_ROOT/eclipse" ]; then
+	echo "Eclipse platform in '$ECLIPSE_ROOT' already installed, skipping."
+else
+	echo "Installing eclipse platform in '$ECLIPSE_ROOT'."
+
+	"$ECLIPSE_DIRECTOR_ROOT/director" \
+		-application org.eclipse.equinox.p2.director \
+		-repository "$ECLIPSE_REPOSITORIES" \
+		-installIU org.eclipse.platform.ide \
+		-bundlepool "$ECLIPSE_BUNDLE_POOL" \
+		-destination "$ECLIPSE_ROOT" \
+		-profile "$ECLIPSE_NAME" \
+		-profileProperties org.eclipse.update.install.features=true \
+		-tag "Clean platform"
+
+	echo "Removing junk from '$ECLIPSE_ROOT'"
+	cd "$ECLIPSE_ROOT" && rm -rf about_files readme *.html
+fi
+
+# Create application launcher
+if [ -x "$HOME/.local/share/applications/$ECLIPSE_NAME.desktop" ]; then
+	echo "Application launcher alredy exists, skipping."
+else
+	echo "Creating application launcher."
+
+cat > "$HOME/.local/share/applications/$ECLIPSE_NAME.desktop" <<EOF
+[Desktop Entry]
+Exec=$ECLIPSE_ROOT/eclipse
+Icon=$ECLIPSE_ROOT/icon.xpm
+Name=$ECLIPSE_NAME
+Type=Application
+EOF
+
+fi
+
+# Check if some IU installation required
+if [ -z "$2" ]; then
+	echo "No IU specified, exiting."
+	exit 0
+fi
+
+ECLIPSE_IUS="$2"
+
+if [ -z "$3" ]; then
+	echo "No additional repositories specified, using $ECLIPSE_REPOSITORIES."
+else
+	ECLIPSE_REPOSITORIES="$ECLIPSE_REPOSITORIES,$3"
+	echo "Additional repositories specified, using $ECLIPSE_REPOSITORIES."
+fi
+
+echo "Installing IUs: $ECLIPSE_IUS."
+
+# Install IUs
+"$ECLIPSE_DIRECTOR_ROOT/director" \
+	-application org.eclipse.equinox.p2.director \
+	-repository "$ECLIPSE_REPOSITORIES" \
+	-installIU "$ECLIPSE_IUS" \
+	-destination "$ECLIPSE_ROOT" \
+	-profile "$ECLIPSE_NAME" \
+	-tag "Installed $ECLIPSE_IUS"
+
+echo "Well, all operations completed!"

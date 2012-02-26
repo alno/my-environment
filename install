@@ -8,9 +8,23 @@ link_to_home() {
   rm -f $HOME/.$1; ln -s $SCRIPTPATH/etc/$1 $HOME/.$1
 }
 
+# Link different configs
+
 link_to_home profile
 link_to_home bashrc
 
 link_to_home gitconfig
 
 link_to_home irbrc
+
+# Install eclipse profiles
+
+install-eclipse-profile topcoder \
+	org.eclipse.jdt.feature.group,org.eclipse.egit.feature.group
+
+install-eclipse-profile cpp \
+	org.eclipse.cdt.feature.group,org.eclipse.egit.feature.group
+
+install-eclipse-profile scala \
+	org.eclipse.jdt.feature.group,org.eclipse.egit.feature.group,org.scala-ide.sdt.feature.feature \
+	http://download.scala-ide.org/releases-29/stable/site/
