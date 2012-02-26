@@ -16,6 +16,8 @@ alias gs='git status'
 
 alias sp='bundle exec rspec spec/**_spec.rb'
 
+alias be='bundle exec'
+
 export PATH="$HOME/Environment/local/rbenv/bin:$PATH"
 
 eval "$(rbenv init -)"
