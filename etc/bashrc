@@ -5,8 +5,6 @@ if [ "$TERM" != "dumb" ]; then
 fi
 
 alias rake='~/Environment/bin/rake-notify'
-alias mvn3='/opt/maven3/bin/mvn 2>&1 clean install | tee buildlog.latest.txt'
-alias cmake='cmake -DCMAKE_PREFIX=/usr -DCMAKE_INSTALL_PREFIX=/usr'
 
 alias gp='git push --all origin'
 alias gl='git pull --rebase origin'

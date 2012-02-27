@@ -22,9 +22,18 @@ link_to_home irbrc
 install-eclipse-profile topcoder \
 	org.eclipse.jdt.feature.group,org.eclipse.egit.feature.group
 
+echo "TODO for eclipse-topcoder: http://fornwall.net/eclipsecoder/"
+
 install-eclipse-profile cpp \
-	org.eclipse.cdt.feature.group,org.eclipse.egit.feature.group
+	org.eclipse.cdt.feature.group,org.eclipse.egit.feature.group,org.eclipse.linuxtools.callgraph.feature.feature.group,org.eclipse.linuxtools.valgrind.feature.group,org.eclipse.linuxtools.cdt.libhover.devhelp.feature.feature.group
+
+echo "TODO for eclipse-cpp: http://cmakeed.sourceforge.net/"
+
+install-eclipse-profile java \
+	org.eclipse.jdt.feature.group,org.eclipse.egit.feature.group,org.eclipse.wb.rcp.feature.feature.group,org.eclipse.wb.swing.feature.feature.group,org.eclipse.m2e.feature.feature.group
+
+echo "TODO for eclipse-java: http://findbugs.sourceforge.net/"
 
 install-eclipse-profile scala \
-	org.eclipse.jdt.feature.group,org.eclipse.egit.feature.group,org.scala-ide.sdt.feature.feature \
-	http://download.scala-ide.org/releases-29/stable/site/
+	org.eclipse.jdt.feature.group,org.eclipse.egit.feature.group,org.scala-ide.sdt.feature.feature.group,esbt.feature.group \
+	http://download.scala-ide.org/releases-29/stable/site/,https://raw.github.com/scalastuff/updatesite/master
