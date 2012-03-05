@@ -30,10 +30,18 @@ install-eclipse-profile cpp \
 echo "TODO for eclipse-cpp: http://cmakeed.sourceforge.net/"
 
 install-eclipse-profile java \
-	org.eclipse.jdt.feature.group,org.eclipse.egit.feature.group,org.eclipse.wb.rcp.feature.feature.group,org.eclipse.wb.swing.feature.feature.group,org.eclipse.m2e.feature.feature.group
+	org.eclipse.jdt.feature.group,org.eclipse.egit.feature.group,org.eclipse.wb.rcp.feature.feature.group,org.eclipse.wb.swing.feature.feature.group,org.eclipse.m2e.feature.feature.group,org.codehaus.groovy.eclipse.feature.feature.group,org.codehaus.groovy.m2eclipse.feature.group,org.codehaus.groovy18.feature.feature.group \
+	http://dist.springsource.org/release/GRECLIPSE/e3.7/
 
 echo "TODO for eclipse-java: http://findbugs.sourceforge.net/"
 
 install-eclipse-profile scala \
 	org.eclipse.jdt.feature.group,org.eclipse.egit.feature.group,org.scala-ide.sdt.feature.feature.group,esbt.feature.group \
 	http://download.scala-ide.org/releases-29/stable/site/,https://raw.github.com/scalastuff/updatesite/master
+
+# Install other applications
+
+# TODO sublime-text-2
+# TODO sweet-home-3d
+# TODO android-sdk
+
