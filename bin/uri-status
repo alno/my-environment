@@ -1,0 +1,11 @@
+#!/usr/bin/env ruby
+
+require 'open-uri'
+
+begin
+  open ARGV[0]
+  exit 0
+rescue
+  exit 1
+end
+
